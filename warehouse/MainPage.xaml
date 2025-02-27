@@ -1,0 +1,40 @@
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="warehouse.MainPage"
+             Title="Места хранения">
+    <VerticalStackLayout Padding="10">
+
+        <!-- Заголовок -->
+        <Label Text="Места хранения" FontSize="24" FontAttributes="Bold" 
+               HorizontalOptions="Center" Margin="0,0,0,10"/>
+
+        <!-- Кнопка поиска -->
+        <Button Text="Поиск" Clicked="OnSearchClicked" BackgroundColor="Blue"/>
+
+        <!-- Список мест хранения -->
+        <CollectionView ItemsSource="{Binding StorageLocations}" SelectionMode="Single"
+                SelectionChanged="OnStorageSelected">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems Mode="Execute">
+                                <SwipeItem Text="Удалить" BackgroundColor="Red" 
+                                   Invoked="OnDeleteStorage" />
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <Grid Padding="10">
+                            <Label Text="{Binding Name}" FontSize="18"/>
+                        </Grid>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+
+        <!-- Кнопка добавления места хранения -->
+        <Button Text="Добавить место хранения" Clicked="OnAddStorageClicked"
+                Margin="0,10,0,0" BackgroundColor="Blue"/>
+
+    </VerticalStackLayout>
+</ContentPage>

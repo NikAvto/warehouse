@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="warehouse.MoveItemPage">
+    <VerticalStackLayout Padding="20">
+        <Label Text="Перемещение предмета" FontSize="24" />
+
+        <Label Text="{Binding ItemName}" FontSize="18" />
+
+        <Picker Title="Выберите место хранения" 
+                ItemsSource="{Binding StorageLocations}"
+                ItemDisplayBinding="{Binding Name}"
+                SelectedItem="{Binding SelectedLocation}" />
+
+        <Button Text="Перенести" Clicked="OnConfirmMove" />
+        <Button Text="Отмена" Clicked="OnCancel" />
+    </VerticalStackLayout>
+</ContentPage>

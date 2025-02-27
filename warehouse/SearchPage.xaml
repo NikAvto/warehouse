@@ -1,0 +1,28 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="warehouse.SearchPage"
+             Title="Поиск вещей">
+    <VerticalStackLayout Padding="10">
+
+        <!-- Поле ввода для поиска -->
+        <SearchBar Placeholder="Введите название вещи" 
+                   TextChanged="OnSearchTextChanged"/>
+
+        <!-- Список найденных вещей -->
+        <CollectionView ItemsSource="{Binding FilteredItems}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="10">
+                        <Label Text="{Binding DisplayText}" FontSize="18"/>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Сообщение о пустом результате -->
+        <Label x:Name="NoResultsLabel" Text="Нет результатов" 
+               IsVisible="False" FontSize="18" 
+               HorizontalOptions="Center"/>
+
+    </VerticalStackLayout>
+</ContentPage>

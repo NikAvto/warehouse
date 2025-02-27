@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="warehouse.ItemsPage">
+    <VerticalStackLayout Padding="10">
+        <Label Text="{Binding StorageName}" FontSize="24" />
+
+        <CollectionView ItemsSource="{Binding Items}" SelectionMode="Single">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <SwipeView>
+                        <SwipeView.LeftItems>
+                            <SwipeItems Mode="Execute">
+                                <SwipeItem Text="Перенести" BackgroundColor="Blue"
+                                           Invoked="OnMoveItem"/>
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+                        <SwipeView.RightItems>
+                            <SwipeItems Mode="Execute">
+                                <SwipeItem Text="Удалить" BackgroundColor="Red"
+                                           Invoked="OnDeleteItem"/>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <Grid Padding="10">
+                            <Label Text="{Binding Name}" FontSize="18"/>
+                        </Grid>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Button Text="Добавить вещь" Clicked="OnAddItemClicked" BackgroundColor="Blue" />
+    </VerticalStackLayout>
+</ContentPage>
