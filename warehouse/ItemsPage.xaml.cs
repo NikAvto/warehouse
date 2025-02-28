@@ -42,12 +42,7 @@ namespace warehouse
         {
             if (sender is SwipeItem swipeItem && swipeItem.BindingContext is Item item)
             {
-                bool confirm = await DisplayAlert("Удаление", $"Удалить {item.Name}?", "Да", "Отмена");
-                if (confirm)
-                {
-                    await _database.DeleteItemAsync(item.Id); // Передаем item.Id вместо item
-                    Items.Remove(item);
-                }
+                await Navigation.PushModalAsync(new DeletePage(_database, item));
             }
         }
 

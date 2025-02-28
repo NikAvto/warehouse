@@ -1,5 +1,8 @@
 ﻿using SQLite;
 using System.Collections.Generic;
+using System.Text.Json;
+using Microsoft.Maui.Storage;
+
 namespace warehouse;
 public class Database
 {
@@ -64,7 +67,69 @@ public class Database
         await _database.InsertAsync(item);
     }
 
+    public async Task DeleteAllAsync()
+    {
+        await _database.DeleteAllAsync<Item>();
+        await _database.DeleteAllAsync<StorageLocation>();
+    }
 
+    // Метод для вставки нескольких записей в таблицу
+    public async Task InsertAllAsync<T>(IEnumerable<T> items) where T : new()
+    {
+        foreach (var item in items)
+        {
+            await _database.InsertAsync(item);
+        }
+    }
+    public async Task ExportDataAsync(string filePath)
+    {
+        // Получаем данные из базы
+        var items = await _database.Table<Item>().ToListAsync();
+        var locations = await _database.Table<StorageLocation>().ToListAsync();
+
+        // Формируем объект для экспорта
+        var exportData = new
+        {
+            Items = items,
+            StorageLocations = locations
+        };
+
+        // Сериализуем в JSON
+        var json = JsonSerializer.Serialize(exportData, new JsonSerializerOptions { WriteIndented = true });
+
+        // Сохраняем в файл
+        await File.WriteAllTextAsync(filePath, json);
+    }
+    public class ImportData
+    {
+        public List<Item> Items { get; set; }
+        public List<StorageLocation> StorageLocations { get; set; }
+    }
+    public async Task ImportDataAsync(string filePath)
+    {
+        try
+        {
+            // Читаем JSON из файла
+            var json = await File.ReadAllTextAsync(filePath);
+
+            // Десериализуем JSON
+            var importData = JsonSerializer.Deserialize<ImportData>(json);
+
+            if (importData != null)
+            {
+                // Очищаем старые данные
+                await DeleteAllAsync();
+
+                // Сохраняем новые данные
+                await InsertAllAsync(importData.StorageLocations);
+                await InsertAllAsync(importData.Items);
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Ошибка при импорте данных: {ex.Message}");
+        }
+    }
 }
 
 public class StorageLocation

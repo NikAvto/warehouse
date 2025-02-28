@@ -1,5 +1,9 @@
 ﻿using System.Collections.ObjectModel;
+using System.Text;
+using System.Text.Json;
+using CommunityToolkit.Maui.Storage;
 using CommunityToolkit.Maui.Views;
+using static warehouse.Database;
 namespace warehouse
 {
     
@@ -96,6 +100,86 @@ namespace warehouse
                 }
             }
             isSwipeAction = false;
+        }
+        public async Task ExportDataWithPickerAsync()
+        {
+            try
+            {
+                // Генерируем JSON-данные
+                var items = await _database.GetAllItemsAsync();
+                var locations = await _database.GetStorageLocationsAsync();
+
+                var exportData = new
+                {
+                    Items = items,
+                    StorageLocations = locations
+                };
+
+                var json = JsonSerializer.Serialize(exportData, new JsonSerializerOptions { WriteIndented = true });
+
+                // Сохраняем файл
+                var fileSaverResult = await FileSaver.Default.SaveAsync("warehouse_export.json", new MemoryStream(Encoding.UTF8.GetBytes(json)));
+
+                if (fileSaverResult.IsSuccessful)
+                {
+                    await DisplayAlert("Успех", $"Файл успешно сохранен: {fileSaverResult.FilePath}", "OK");
+                }
+                else
+                {
+                    await DisplayAlert("Ошибка", "Не удалось сохранить файл", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Ошибка", $"Не удалось экспортировать данные: {ex.Message}", "OK");
+            }
+        }
+
+        public async Task ImportDataWithPickerAsync()
+        {
+            try
+            {
+                // Выбираем файл для импорта
+                var fileResult = await FilePicker.Default.PickAsync(new PickOptions
+                {
+                    PickerTitle = "Выберите файл для импорта",
+                    FileTypes = new FilePickerFileType(
+                        new Dictionary<DevicePlatform, IEnumerable<string>>
+                        {
+                    { DevicePlatform.WinUI, new[] { ".json" } },
+                    { DevicePlatform.Android, new[] { "application/json" } },
+                    { DevicePlatform.iOS, new[] { "public.json" } }
+                        })
+                });
+
+                if (fileResult != null)
+                {
+                    // Импортируем данные из выбранного файла
+                    await _database.ImportDataAsync(fileResult.FullPath);
+                    await DisplayAlert("Успех", "Данные успешно импортированы", "OK");
+
+                    // Обновляем список мест хранения
+                    var locations = await _database.GetStorageLocationsAsync();
+                    StorageLocations.Clear();
+                    foreach (var location in locations)
+                    {
+                        StorageLocations.Add(location);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Ошибка", $"Не удалось импортировать данные: {ex.Message}", "OK");
+            }
+        }
+        private async void OnExportDataClicked(object sender, EventArgs e)
+        {
+            await ExportDataWithPickerAsync();
+        }
+
+        private async void OnImportDataClicked(object sender, EventArgs e)
+        {
+            await ImportDataWithPickerAsync();
         }
     }
 }

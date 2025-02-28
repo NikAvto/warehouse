@@ -27,14 +27,15 @@ public partial class MoveItemPage : ContentPage
             return;
         }
 
+        await _database.DeleteItemAsync(_item.Id);
         _item.StorageLocationId = SelectedLocation.Id;
         await _database.SaveItemAsync(_item);
 
-        await Navigation.PopModalAsync(); // Закрываем окно
+        await Navigation.PopModalAsync();
     }
 
     private async void OnCancel(object sender, EventArgs e)
     {
-        await Navigation.PopModalAsync(); // Закрываем окно без изменений
+        await Navigation.PopModalAsync();
     }
 }
